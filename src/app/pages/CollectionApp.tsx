@@ -714,9 +714,10 @@ export default function CollectionApp() {
     if (!isAutoCheck) setLoading(true);
     setError(null);
     const lang = langCode || apiCode;
-    const url = lang === 'en'
-      ? 'https://db.ygoprodeck.com/api/v7/cardinfo.php'
-      : `https://db.ygoprodeck.com/api/v7/cardinfo.php?language=${lang}`;
+    const baseUrl = 'https://db.ygoprodeck.com/api/v7/cardinfo.php';
+    const url = (lang === 'en' || !lang)
+      ? baseUrl
+      : `${baseUrl}?language=${lang}`;
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error('Échec du chargement des cartes');

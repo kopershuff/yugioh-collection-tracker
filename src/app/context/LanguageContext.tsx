@@ -18,6 +18,7 @@ export const LANGUAGES: LanguageOption[] = [
   { code: 'it', label: 'Italiano', flag: 'IT', apiCode: 'it', nativeName: 'Italiano' },
   { code: 'pt', label: 'Português', flag: 'PT', apiCode: 'pt', nativeName: 'Português' },
   { code: 'es', label: 'Español', flag: 'ES', apiCode: 'en', nativeName: 'Español' },
+  { code: 'ja', label: 'Japanese', flag: 'JP', apiCode: 'en', nativeName: '日本語' },
 ];
 
 interface LanguageContextType {

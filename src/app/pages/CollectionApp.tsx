@@ -355,12 +355,13 @@ const translateSetName = (setName: string): string => {
   return setName;
 };
 
-const translateText = (text: string, translations: Record<string, string>): string => {
-  return translations[text] || text;
+const translateText = (text: string, translations: Record<string, string>, lang = 'fr'): string => {
+  if (lang === 'fr') return translations[text] || text;
+  return text;
 };
 
 export default function CollectionApp() {
-  const { t, apiCode } = useLanguage();
+  const { t, apiCode, language } = useLanguage();
   const [cards, setCards] = useState<YuGiOhCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -750,12 +751,12 @@ export default function CollectionApp() {
 
   // Get unique types and races for filters
   const availableTypes = useMemo(() => {
-    const types = new Set(cards.map(c => translateText(c.type, typeTranslations)));
+    const types = new Set(cards.map(c => translateText(c.type, typeTranslations, language)));
     return ['Tous', ...Array.from(types).sort()];
   }, [cards]);
 
   const availableRaces = useMemo(() => {
-    const races = new Set(cards.map(c => c.race ? translateText(c.race, raceTranslations) : '').filter(Boolean));
+    const races = new Set(cards.map(c => c.race ? translateText(c.race, raceTranslations, language) : '').filter(Boolean));
     return ['Tous', ...Array.from(races).sort()];
   }, [cards]);
 
@@ -794,8 +795,8 @@ export default function CollectionApp() {
 
       const matchesSearch = card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            card.desc.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = filterType === 'Tous' || translateText(card.type, typeTranslations) === filterType;
-      const matchesRace = filterRace === 'Tous' || (card.race && translateText(card.race, raceTranslations) === filterRace);
+      const matchesType = filterType === 'Tous' || translateText(card.type, typeTranslations, language) === filterType;
+      const matchesRace = filterRace === 'Tous' || (card.race && translateText(card.race, raceTranslations, language) === filterRace);
       const matchesArchetype = filterArchetype === 'Tous' || card.archetype === filterArchetype;
       const matchesSet = filterSet === 'Tous' || card.card_sets?.some(set => translateSetName(set.set_name) === filterSet);
       const matchesRarity = filterRarity === 'Tous' || card.card_sets?.some(set => set.set_rarity === filterRarity);
@@ -818,7 +819,7 @@ export default function CollectionApp() {
         if (sortBy === 'name') {
           return a.name.localeCompare(b.name);
         } else if (sortBy === 'type') {
-          return translateText(a.type, typeTranslations).localeCompare(translateText(b.type, typeTranslations));
+          return translateText(a.type, typeTranslations, language).localeCompare(translateText(b.type, typeTranslations, language));
         } else if (sortBy === 'rarity') {
           const rarityOrder = ['Common', 'Rare', 'Super Rare', 'Ultra Rare', 'Secret Rare', 'Ultimate Rare',
                               'Ghost Rare', 'Starlight Rare', "Collector's Rare", 'Prismatic Secret Rare',
@@ -1612,12 +1613,12 @@ export default function CollectionApp() {
                 <div className="flex flex-wrap gap-2 text-xs mb-2">
                   {card.race && (
                     <span className="px-2 py-1 bg-white/70 border border-gray-300 rounded font-medium text-gray-700">
-                      {translateText(card.race, raceTranslations)}
+                      {translateText(card.race, raceTranslations, language)}
                     </span>
                   )}
                   {card.attribute && (
                     <span className={`px-2 py-1 rounded font-medium ${getAttributeColor(card.attribute)}`}>
-                      {translateText(card.attribute, attributeTranslations)}
+                      {translateText(card.attribute, attributeTranslations, language)}
                     </span>
                   )}
                 </div>

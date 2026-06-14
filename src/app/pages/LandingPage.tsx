@@ -1,12 +1,19 @@
-import { Check, Star, Cloud, Download, Zap, Heart, Database, Users, Gift, Bell, Shield, Smartphone } from 'lucide-react';
+import { Check, Star, Cloud, Zap, Heart, Database, Users, Bell, Smartphone } from 'lucide-react';
 import { Link } from 'react-router';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export function LandingPage() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Hero Section */}
       <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="max-w-7xl mx-auto px-4 py-20 relative">
+          <div className="absolute top-0 right-4 pt-4 z-10">
+            <LanguageSwitcher variant="dark" />
+          </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-6">
               <Star className="w-16 h-16 text-amber-400 fill-amber-400 animate-pulse" />

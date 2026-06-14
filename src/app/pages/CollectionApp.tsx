@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Filter, Check, Star, Loader2, RefreshCw, List, Grid, Heart, Plus, Minus, DollarSign, ExternalLink, Download, LogIn, LogOut, CloudOff, Cloud, Key, MessageCircle } from 'lucide-react';
+import { Search, Filter, Check, Star, Loader2, RefreshCw, List, Grid, Heart, Plus, Minus, DollarSign, ExternalLink, Download, LogOut, CloudOff, Cloud, Key, MessageCircle } from 'lucide-react';
 
 // Déclaration TypeScript pour le timeout global
 declare global {
@@ -14,6 +14,8 @@ import { PinAuth } from '../components/PinAuth';
 import { FirestoreDebug } from '../components/FirestoreDebug';
 import { CloudSaveButton } from '../components/CloudSaveButton';
 import { FirebaseOptimizationInfo } from '../components/FirebaseOptimizationInfo';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 interface YuGiOhCard {
   id: number;
@@ -358,6 +360,7 @@ const translateText = (text: string, translations: Record<string, string>): stri
 };
 
 export default function CollectionApp() {
+  const { t, apiCode } = useLanguage();
   const [cards, setCards] = useState<YuGiOhCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -615,18 +618,18 @@ export default function CollectionApp() {
     }
   }, [ownedCards, ownedRarities, ownedQuantities, wishlistCards, wishlistRarities, userPin]);
 
-  // Fetch all cards from API
+  // Fetch all cards from API (re-fetch when language changes)
   useEffect(() => {
-    fetchCards(false);
+    fetchCards(false, apiCode);
 
     // Vérification automatique toutes les heures
     const checkInterval = setInterval(() => {
       console.log('🔍 Vérification automatique des nouvelles cartes...');
-      fetchCards(true);
+      fetchCards(true, apiCode);
     }, 60 * 60 * 1000); // 1 heure
 
     return () => clearInterval(checkInterval);
-  }, []);
+  }, [apiCode]);
 
   // Fermer le menu utilisateur en cliquant ailleurs
   useEffect(() => {
@@ -707,11 +710,12 @@ export default function CollectionApp() {
     }
   };
 
-  const fetchCards = async (isAutoCheck = false) => {
+  const fetchCards = async (isAutoCheck = false, langCode?: string) => {
     if (!isAutoCheck) setLoading(true);
     setError(null);
+    const lang = langCode || apiCode;
     try {
-      const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php?language=fr');
+      const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?language=${lang}`);
       if (!response.ok) throw new Error('Échec du chargement des cartes');
       const data = await response.json();
       const newCards = data.data || [];
@@ -1113,6 +1117,9 @@ export default function CollectionApp() {
                   </div>
                 )}
               </div>
+
+              {/* Sélecteur de langue */}
+              <LanguageSwitcher variant="light" />
 
               {/* Bouton Contact Reddit */}
               <a

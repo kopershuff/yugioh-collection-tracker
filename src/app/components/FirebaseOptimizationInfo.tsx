@@ -1,4 +1,4 @@
-import { Info, Zap, Database, Users } from 'lucide-react';
+import { Zap, Database, Users } from 'lucide-react';
 
 export function FirebaseOptimizationInfo() {
   return (

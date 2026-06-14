@@ -339,19 +339,12 @@ const setTranslations: Record<string, string> = {
   'Limited Edition': 'Édition Limitée',
 };
 
-const translateSetName = (setName: string): string => {
-  // Chercher une correspondance exacte
-  if (setTranslations[setName]) {
-    return setTranslations[setName];
-  }
-
-  // Chercher une correspondance partielle
+const translateSetName = (setName: string, lang = 'fr'): string => {
+  if (lang !== 'fr') return setName;
+  if (setTranslations[setName]) return setTranslations[setName];
   for (const [english, french] of Object.entries(setTranslations)) {
-    if (setName.includes(english)) {
-      return setName.replace(english, french);
-    }
+    if (setName.includes(english)) return setName.replace(english, french);
   }
-
   return setName;
 };
 
@@ -621,16 +614,21 @@ export default function CollectionApp() {
 
   // Fetch all cards from API (re-fetch when language changes)
   useEffect(() => {
+    // Reset filters when language changes
+    setFilterType('Tous');
+    setFilterRace('Tous');
+    setFilterSet('Tous');
+    setFilterRarity('Tous');
     fetchCards(false, apiCode);
 
     // Vérification automatique toutes les heures
     const checkInterval = setInterval(() => {
       console.log('🔍 Vérification automatique des nouvelles cartes...');
       fetchCards(true, apiCode);
-    }, 60 * 60 * 1000); // 1 heure
+    }, 60 * 60 * 1000);
 
     return () => clearInterval(checkInterval);
-  }, [apiCode]);
+  }, [language]);
 
   // Fermer le menu utilisateur en cliquant ailleurs
   useEffect(() => {
@@ -778,7 +776,7 @@ export default function CollectionApp() {
   const availableSets = useMemo(() => {
     const sets = new Set<string>();
     cards.forEach(card => {
-      card.card_sets?.forEach(set => sets.add(translateSetName(set.set_name)));
+      card.card_sets?.forEach(set => sets.add(translateSetName(set.set_name, language)));
     });
     return ['Tous', ...Array.from(sets).sort()];
   }, [cards]);
@@ -798,7 +796,7 @@ export default function CollectionApp() {
       const matchesType = filterType === 'Tous' || translateText(card.type, typeTranslations, language) === filterType;
       const matchesRace = filterRace === 'Tous' || (card.race && translateText(card.race, raceTranslations, language) === filterRace);
       const matchesArchetype = filterArchetype === 'Tous' || card.archetype === filterArchetype;
-      const matchesSet = filterSet === 'Tous' || card.card_sets?.some(set => translateSetName(set.set_name) === filterSet);
+      const matchesSet = filterSet === 'Tous' || card.card_sets?.some(set => translateSetName(set.set_name, language) === filterSet);
       const matchesRarity = filterRarity === 'Tous' || card.card_sets?.some(set => set.set_rarity === filterRarity);
       const matchesOwnership = !showOnlyMissing || !ownedCards.has(card.id);
 

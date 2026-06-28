@@ -410,6 +410,9 @@ export default function CollectionApp() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('Tous');
+  const [artworkIndex, setArtworkIndex] = useState<Map<number, number>>(new Map());
+  const getArtworkIdx = (cardId: number) => artworkIndex.get(cardId) || 0;
+  const setArtworkIdx = (cardId: number, idx: number) => setArtworkIndex(prev => new Map(prev).set(cardId, idx));
   const [filterRace, setFilterRace] = useState<string>('Tous');
   const [filterArchetype, setFilterArchetype] = useState<string>('Tous');
   const [filterSet, setFilterSet] = useState<string>('Tous');

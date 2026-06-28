@@ -356,6 +356,7 @@ const translateText = (text: string, translations: Record<string, string>, _lang
 export default function CollectionApp() {
   const { t, apiCode, language } = useLanguage();
   const cardTr = getCardTranslations(language);
+  const cardTr = getCardTranslations(language);
   const [cards, setCards] = useState<YuGiOhCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
